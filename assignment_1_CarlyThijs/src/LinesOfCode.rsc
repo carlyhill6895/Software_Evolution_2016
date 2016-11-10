@@ -17,13 +17,23 @@ int getLinesOfCode(M3 model){
 
 int getLinesOfClass(str src){
 	int amountLines = 0;
-	for(/\n[^\n]/ := src){
+	for(/\s*[^\s]+\s*(\n|\Z)/ := src){
 		amountLines += 1;
 	}
-	for(/\*/ := src){
-		amountLines -= 1;
+	for(/(\n|\A)<prefix:.*>\\\*<comment:(.|\n)*>\*\\<postfix:.*>(\n|\Z)/ := src){
+		//newlines = for(/\s*[^\s]+\s*\n/ := comment){ newlines++; }
+		//if(newlines == 0 && (/^\s*$/ := prefix && /^\s*$/ := postfix))
+		if(/^\s*$/ := prefix){
+			amountLines -= 1;
+		}
+		for(/\s*[^\s]+\s*\n/ := comment){
+			amountLines -= 1;
+		}
+		if(/^(\s|\/\/.*|\\\*.*)+$/ := postfix){
+			amountLines -= 1;
+		}
 	}
-	for(/\/\// := src) {
+	for(/(\n|\A)\s*\/\// := src) {
 		amountLines -= 1;
 	}
 	return amountLines;
