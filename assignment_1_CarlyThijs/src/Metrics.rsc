@@ -14,14 +14,3 @@ list[str] getMetrics(loc projectLocation){
 	return ranks;
 }
 
-str getRankLinesOfCode(int linesOfCode){
-	str rank = "";
-	
-	if(linesOfCode < 66000) rank = "++";
-	else if (linesOfCode < 246000) rank = "+";
-	else if (linesOfCode < 665000) rank = "o";
-	else if (linesOfCode < 1310000) rank = "-";
-	else rank = "--";
-	
-	return rank;
-}
