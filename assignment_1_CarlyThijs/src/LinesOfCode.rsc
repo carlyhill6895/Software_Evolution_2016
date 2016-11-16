@@ -1,6 +1,7 @@
 module LinesOfCode
 
 import IO;
+import String;
 import lang::java::m3::Core;
 
 /*
@@ -8,33 +9,21 @@ import lang::java::m3::Core;
 */
 int getLinesOfCode(M3 model){
 	int linesOfCode= 0;
-	for(loc l <- [cl | <cl,_>  <- model@containment, isClass(cl)]){
-		str classSrc = readFile(l);
-		linesOfCode += getLinesOfClass(classSrc);
+	for(loc l <- [cl | <cl,_> <- model@containment, cl.scheme == "java+compilationUnit"]){
+		file = readFile(l);
+		//println(file);
+		// get all relevant comments
+		for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
+			// remove the comments
+			//println(readFile(c));
+			file = replaceAll(file, readFile(c), "");
+		}
+		println(file);
+		// count the lines that contain not only whitespace
+		for(/<x:.*[^\s].*(\n|\Z)>/ := file){
+			//println(x);
+			linesOfCode += 1;
+		}
 	}
 	return linesOfCode;
-}
-
-int getLinesOfClass(str src){
-	int amountLines = 0;
-	for(/\s*[^\s]+\s*(\n|\Z)/ := src){
-		amountLines += 1;
-	}
-	for(/(\n|\A)<prefix:.*>\\\*<comment:(.|\n)*>\*\\<postfix:.*>(\n|\Z)/ := src){
-		//newlines = for(/\s*[^\s]+\s*\n/ := comment){ newlines++; }
-		//if(newlines == 0 && (/^\s*$/ := prefix && /^\s*$/ := postfix))
-		if(/^\s*$/ := prefix){
-			amountLines -= 1;
-		}
-		for(/\s*[^\s]+\s*\n/ := comment){
-			amountLines -= 1;
-		}
-		if(/^(\s|\/\/.*|\\\*.*)+$/ := postfix){
-			amountLines -= 1;
-		}
-	}
-	for(/(\n|\A)\s*\/\// := src) {
-		amountLines -= 1;
-	}
-	return amountLines;
 }
