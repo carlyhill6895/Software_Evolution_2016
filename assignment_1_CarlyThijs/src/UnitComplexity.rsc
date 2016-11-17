@@ -61,14 +61,14 @@ list[list[int]] getRisks(M3 model){
 	
 	for(m <- methods){
 		int linesOfCode = getLinesOfSrc(readFile(m));
-		if (linesOfCode > 100) {print(readFile(m));unitSizeVeryHigh += linesOfCode;}
+		if (linesOfCode > 100) {print("big method: \n <m>\n");unitSizeVeryHigh += linesOfCode;}
 		else if (linesOfCode > 50) unitSizeHigh += linesOfCode;
 		else if (linesOfCode > 10) unitSizeMedium += linesOfCode;
 		else unitSizeLow += linesOfCode;
 		
 		methodAST = getMethodASTEclipse(m, model = model);
 		int cc = getMethodComplexity(methodAST);
-		if (cc > 50) {print(readFile(m)); ccVeryHigh += linesOfCode;}
+		if (cc > 50) {print("Complex method: \n <m>\n"); ccVeryHigh += linesOfCode;}
 		else if (cc > 20) ccHigh += linesOfCode;
 		else if (cc > 10) ccMedium += linesOfCode;
 		else ccLow += linesOfCode;
