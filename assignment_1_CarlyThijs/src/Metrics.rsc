@@ -16,4 +16,3 @@ list[str] getMetrics(loc projectLocation){
 	ranks += getComplexityUnitSizeRanks(model);
 	return ranks;
 }
-

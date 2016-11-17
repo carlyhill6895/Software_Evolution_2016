@@ -8,26 +8,21 @@ import lang::java::jdt::m3::Core;
 import String;
 import LinesOfCode;
 
-
-
 list[str] getComplexityUnitSizeRanks(M3 model){
-	list[str] ranks =  [];
+	list[str] ranks = [];
 	risks = getRisks(model);
-	for(risklocs <- risks ){
+	for(risklocs <- risks)
 		ranks += getRank(risklocs, model);
-	}
 	return ranks;
 }
 
 str getRank(list[int] catLOCs, M3 model){
 	int totalLOC = getLinesOfCode(model);
 	list[real] percentages = [];
-	for(int s <-catLOCs){
+	for(int s <-catLOCs)
 		percentages += getPercentageLoc(s, totalLOC);
-	}
 	println("percentages of loc per risk category:  <percentages>");
-	
-	str rank = "";
+
 	num pcVeryHigh = head(percentages);
 	println("percentage very high: <pcVeryHigh>");
 	percentages = tail(percentages);
@@ -36,15 +31,14 @@ str getRank(list[int] catLOCs, M3 model){
 	percentages = tail(percentages);
 	num pcMedium = head(percentages);
 	println("percentage medium: <pcMedium>");
-	
-	if(pcMedium < 25 && pcHigh <=0 && pcVeryHigh <=0) rank = "++";
-	else if(pcMedium <30 && pcHigh < 5 && pcVeryHigh <=0) rank = "+";
-	else if(pcMedium < 40 && pcHigh < 10 && pcVeryHigh <=0) rank = "o";
-	else if(pcMedium < 50 && pcHigh < 15 && pcVeryHigh < 5) rank = "-";
-	else rank = "--";
-	 
-	return rank;
+
+	return if(pcMedium < 25 && pcHigh <=0 && pcVeryHigh <=0) "++";
+		else if(pcMedium <30 && pcHigh < 5 && pcVeryHigh <=0) "+";
+		else if(pcMedium < 40 && pcHigh < 10 && pcVeryHigh <=0) "o";
+		else if(pcMedium < 50 && pcHigh < 15 && pcVeryHigh < 5) "-";
+		else "--";
 }
+
 list[list[int]] getRisks(M3 model){
 	list[int] cclocs = [];
 	list[list[int]] risks = [];
@@ -54,25 +48,24 @@ list[list[int]] getRisks(M3 model){
 	int ccVeryHigh = 0;
 	int ccHigh = 0;
 	int ccMedium = 0;
-	int ccLow = 0;	
-	
+	int ccLow = 0;
+
 	list[int] unitSizeRanks = [];
 	int unitSizeVeryHigh = 0;
 	int unitSizeHigh = 0;
 	int unitSizeMedium = 0;
 	int unitSizeLow = 0;
-	
+
 	for(<c,m> <- methods){
-		
 		int linesOfCode = getLinesOfUnit(readFile(m), head(getCompilationUnit(c, model)), model);
 		if (linesOfCode > 100) {
-			bigMethods += m; 
+			bigMethods += m;
 			unitSizeVeryHigh += linesOfCode;
 		}
 		else if (linesOfCode > 50) unitSizeHigh += linesOfCode;
 		else if (linesOfCode > 10) unitSizeMedium += linesOfCode;
 		else unitSizeLow += linesOfCode;
-		
+
 		methodAST = getMethodASTEclipse(m, model = model);
 		int cc = getMethodComplexity(methodAST);
 		if (cc > 50) {
@@ -83,7 +76,7 @@ list[list[int]] getRisks(M3 model){
 		else if (cc > 10) ccMedium += linesOfCode;
 		else ccLow += linesOfCode;
 	}
-	
+
 	unitSizeRanks = unitSizeRanks + unitSizeVeryHigh + unitSizeHigh + unitSizeMedium + unitSizeLow;
 	cclocs = cclocs + ccVeryHigh + ccHigh + ccMedium + ccLow;
 	risks = risks + [unitSizeRanks] + [cclocs];
@@ -93,7 +86,6 @@ list[list[int]] getRisks(M3 model){
 	printLocations(complexMethods);
 	return risks;
 }
-
 
 //implementation following: http://onlinelibrary.wiley.com/doi/10.1002/smr.1760/full
 int getMethodComplexity(methodAST){
@@ -115,24 +107,16 @@ int getMethodComplexity(methodAST){
 	return cc;
 }
 
+real getPercentageLoc(num riskLOC, num totalLOC) =
+	riskLOC / totalLOC * 100.0;
 
+lrel[loc,loc] getMethods(M3 model) =
+	[<c,m> | <c,m> <- model@containment, isMethod(m)];
 
-real getPercentageLoc(num riskLOC, num totalLOC){
-	return riskLOC / totalLOC * 100.0;
-}
+list[loc] getCompilationUnit(loc class, M3 model) =
+	[cu | <cu,class> <- model@containment];
 
-lrel[loc,loc] getMethods(M3 model){
-	return [<c,m> | <c,m> <- model@containment, isMethod(m)];
-}
-
-list[loc]  getCompilationUnit(loc class, M3 model){
-	return [ cu | <cu,class> <- model@containment];
-}
-
-int printLocations(list[loc] locations){
-	for(l <- locations){
+void printLocations(list[loc] locations){
+	for(l <- locations)
 		println(l);
-	}
-	return 0;
 }
-
