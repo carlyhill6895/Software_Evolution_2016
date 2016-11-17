@@ -6,6 +6,7 @@ import List;
 import util::Math;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
+import String;
 
 
 
@@ -47,7 +48,7 @@ str getRank(list[int] catLOCs, M3 model){
 list[list[int]] getRisks(M3 model){
 	list[int] cclocs = [];
 	list[list[int]] risks = [];
-	list[loc] methods = getMethods(model);
+	lrel[loc,loc] methods = getMethods(model);
 	list[loc] bigMethods = [];
 	list[loc] complexMethods = [];
 	int ccVeryHigh = 0;
@@ -61,8 +62,9 @@ list[list[int]] getRisks(M3 model){
 	int unitSizeMedium = 0;
 	int unitSizeLow = 0;
 	
-	for(m <- methods){
-		int linesOfCode = getLinesOfLoc(m, model);
+	for(<c,m> <- methods){
+		
+		int linesOfCode = getLinesOfLoc(m, head(getCompilationUnit(c, model)), model);
 		if (linesOfCode > 100) {
 			bigMethods += m; 
 			unitSizeVeryHigh += linesOfCode;
@@ -119,8 +121,12 @@ real getPercentageLoc(num riskLOC, num totalLOC){
 	return riskLOC / totalLOC * 100.0;
 }
 
-list[loc] getMethods(M3 model){
-	return [m | <_,m> <- model@containment, isMethod(m)];
+lrel[loc,loc] getMethods(M3 model){
+	return [<c,m> | <c,m> <- model@containment, isMethod(m)];
+}
+
+list[loc]  getCompilationUnit(loc class, M3 model){
+	return [ cu | <cu,class> <- model@containment];
 }
 
 int printLocations(list[loc] locations){
@@ -129,22 +135,16 @@ int printLocations(list[loc] locations){
 	}
 	return 0;
 }
-
-int getLinesOfLoc(loc l, M3 model){
+int getLinesOfLoc(loc m, loc cu, M3 model){
 	int linesOfCode = 0;
-	file = readFile(l);
-	println(l);
-	print(file);
-	for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
+	file = readFile(m);
+	for(c <- [c2 | <_,c2> <- model@documentation, c2.path == cu.path]){
 		// remove the comments
-		print(readFile(c));
 		file = replaceAll(file, readFile(c), "");
 	}
 	// count the lines that contain not only whitespace
-	for(/<x:.*[^\s].*(\n|\Z)>/ := file){
-		//println(x);
+	for(/<x:.*[^\s].*\r?(\n|\Z)>/ := file){
 		linesOfCode += 1;
 	}
-	print("lines of code van method: <linesOfCode>");
 	return linesOfCode;
 }

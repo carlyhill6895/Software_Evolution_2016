@@ -3,15 +3,16 @@ module LinesOfCode
 import IO;
 import String;
 import lang::java::m3::Core;
+import List;
 
 /*
  get the lines of code from a specific source code
 */
 int getLinesOfCode(M3 model){
 	int linesOfCode= 0;
-	for(loc l <- [cl | <cl,_> <- model@containment, cl.scheme == "java+compilationUnit"]){
+	list[loc] compilationUnits = [cl | <cl,_> <- model@containment, cl.scheme == "java+compilationUnit"];
+	for(loc l <- compilationUnits){
 		file = readFile(l);
-		//println(file);
 		// get all relevant comments
 		for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
 			// remove the comments
@@ -19,11 +20,12 @@ int getLinesOfCode(M3 model){
 			file = replaceAll(file, readFile(c), "");
 		}
 		// count the lines that contain not only whitespace
-		for(/<x:.*[^\s].*(\n|\Z)>/ := file){
-			//println(x);
+		for(/<x:.*[^\s].*\r?(\n|\Z)>/ := file){
 			linesOfCode += 1;
 		}
+		
 	}
+	
 	return linesOfCode;
 }
 
