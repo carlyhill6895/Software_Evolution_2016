@@ -1,12 +1,12 @@
 module UnitComplexity
 
-import LinesOfCode;
 import IO;
 import List;
 import util::Math;
 import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import String;
+import LinesOfCode;
 
 
 
@@ -64,7 +64,7 @@ list[list[int]] getRisks(M3 model){
 	
 	for(<c,m> <- methods){
 		
-		int linesOfCode = getLinesOfLoc(m, head(getCompilationUnit(c, model)), model);
+		int linesOfCode = getLinesOfUnit(readFile(m), head(getCompilationUnit(c, model)), model);
 		if (linesOfCode > 100) {
 			bigMethods += m; 
 			unitSizeVeryHigh += linesOfCode;
@@ -135,16 +135,4 @@ int printLocations(list[loc] locations){
 	}
 	return 0;
 }
-int getLinesOfLoc(loc m, loc cu, M3 model){
-	int linesOfCode = 0;
-	file = readFile(m);
-	for(c <- [c2 | <_,c2> <- model@documentation, c2.path == cu.path]){
-		// remove the comments
-		file = replaceAll(file, readFile(c), "");
-	}
-	// count the lines that contain not only whitespace
-	for(/<x:.*[^\s].*\r?(\n|\Z)>/ := file){
-		linesOfCode += 1;
-	}
-	return linesOfCode;
-}
+

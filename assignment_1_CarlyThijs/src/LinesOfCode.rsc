@@ -11,12 +11,16 @@ int getLinesOfCode(M3 model){
 	int linesOfCode= 0;
 	for(loc l <- [cl | <cl,_> <- model@containment, cl.scheme == "java+compilationUnit"]){
 		file = readFile(l);
-		//println(file);
 		// get all relevant comments
-		for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
+		linesOfCode += getLinesOfUnit(file, l, model);
+	}
+	return linesOfCode;
+}
+
+int getLinesOfUnit(str file, loc cu, M3 model){
+	int linesOfCode = 0;
+		for(c <- [c2 | <_,c2> <- model@documentation, c2.path == cu.path]){
 			// remove the comments
-			//println(c);
-			//println(readFile(c));
 			// If the comment is multiline, insert extra newline, otherwise the next code
 			// snippet will be interpreted as 1 LOC.
 			//   foo(); /*
@@ -28,13 +32,10 @@ int getLinesOfCode(M3 model){
 				file = replaceAll(file, readFile(c), "\n");
 			}
 		}
-		//println(file);
 		// count the lines that contain not only whitespace
 		for(/<x:.*[^\s].*\r?(\n|\Z)>/ := file){
-			//println(x);
 			linesOfCode += 1;
 		}
-	}
 	return linesOfCode;
 }
 
