@@ -18,7 +18,6 @@ int getLinesOfCode(M3 model){
 			//println(readFile(c));
 			file = replaceAll(file, readFile(c), "");
 		}
-		println(file);
 		// count the lines that contain not only whitespace
 		for(/<x:.*[^\s].*(\n|\Z)>/ := file){
 			//println(x);
@@ -26,4 +25,19 @@ int getLinesOfCode(M3 model){
 		}
 	}
 	return linesOfCode;
+}
+
+/*
+	give back the rank based on the Sig maintainability model (as defined on http://docs.sonarqube.org/display/SONARQUBE45/SIG+Maintainability+Model+Plugin)
+*/
+str getRankLinesOfCode(int linesOfCode){
+	str rank = "";
+	
+	if(linesOfCode < 66000) rank = "++";
+	else if (linesOfCode < 246000) rank = "+";
+	else if (linesOfCode < 665000) rank = "o";
+	else if (linesOfCode < 1310000) rank = "-";
+	else rank = "--";
+	
+	return rank;
 }

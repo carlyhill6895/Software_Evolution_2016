@@ -62,7 +62,7 @@ list[list[int]] getRisks(M3 model){
 	int unitSizeLow = 0;
 	
 	for(m <- methods){
-		int linesOfCode = getLinesOfSrc(readFile(m));
+		int linesOfCode = getLinesOfLoc(m, model);
 		if (linesOfCode > 100) {
 			bigMethods += m; 
 			unitSizeVeryHigh += linesOfCode;
@@ -128,4 +128,23 @@ int printLocations(list[loc] locations){
 		println(l);
 	}
 	return 0;
+}
+
+int getLinesOfLoc(loc l, M3 model){
+	int linesOfCode = 0;
+	file = readFile(l);
+	println(l);
+	print(file);
+	for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
+		// remove the comments
+		print(readFile(c));
+		file = replaceAll(file, readFile(c), "");
+	}
+	// count the lines that contain not only whitespace
+	for(/<x:.*[^\s].*(\n|\Z)>/ := file){
+		//println(x);
+		linesOfCode += 1;
+	}
+	print("lines of code van method: <linesOfCode>");
+	return linesOfCode;
 }
