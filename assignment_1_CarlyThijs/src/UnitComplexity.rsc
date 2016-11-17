@@ -17,7 +17,7 @@ list[str] getComplexityUnitSizeRanks(M3 model){
 }
 
 str getRank(list[int] catLOCs, M3 model){
-	int totalLOC = getLinesOfCode(model);
+	<totalLOC,_> = getLinesOfCode(model);
 	list[real] percentages = [];
 	for(int s <-catLOCs)
 		percentages += getPercentageLoc(s, totalLOC);
@@ -57,7 +57,7 @@ list[list[int]] getRisks(M3 model){
 	int unitSizeLow = 0;
 
 	for(<c,m> <- methods){
-		int linesOfCode = getLinesOfUnit(readFile(m), head(getCompilationUnit(c, model)), model);
+		<linesOfCode,_> = getLinesOfUnit(readFile(m), head(getCompilationUnit(c, model)), model);
 		if (linesOfCode > 100) {
 			bigMethods += m;
 			unitSizeVeryHigh += linesOfCode;

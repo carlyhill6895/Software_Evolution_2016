@@ -10,7 +10,8 @@ list[str] getMetrics(loc projectLocation){
 	list[str] ranks = [];
 	M3 model = createM3FromEclipseProject(projectLocation);
 	println("model gemaakt");
-	int linesOfCode = getLinesOfCode(model);
+	list[str] files = [];
+	<linesOfCode, files> = getLinesOfCode(model);
 	println("Lines Of Code (LOC) : <linesOfCode>");
 	ranks += getRankLinesOfCode(linesOfCode);
 	ranks += getComplexityUnitSizeRanks(model);

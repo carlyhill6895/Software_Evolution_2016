@@ -7,16 +7,19 @@ import lang::java::m3::Core;
 /*
  get the lines of code from a specific source code
 */
-int getLinesOfCode(M3 model){
+tuple[int, list[str]] getLinesOfCode(M3 model){
 	int linesOfCode= 0;
+	list[str] files = [];
 	for(loc l <- [cl | <cl,_> <- model@containment, cl.scheme == "java+compilationUnit"]){
 		file = readFile(l);
-		linesOfCode += getLinesOfUnit(file, l, model);
+		<lines, file> = getLinesOfUnit(file, l, model);
+		linesOfCode += lines;
+		files += file;
 	}
-	return linesOfCode;
+	return <linesOfCode,files>;
 }
 
-int getLinesOfUnit(str file, loc cu, M3 model){
+tuple[int, str] getLinesOfUnit(str file, loc cu, M3 model){
 	// get all relevant comments and remove them
 	for(c <- [c2 | <_,c2> <- model@documentation, c2.path == cu.path]){
 		// If the comment is multiline, insert extra newline, otherwise the next code
@@ -32,7 +35,7 @@ int getLinesOfUnit(str file, loc cu, M3 model){
 	// count the lines that contain not only whitespace
 	for(/<x:[^\s].*\r?(\n|\Z)>/ := file)
 		linesOfCode += 1;
-	return linesOfCode;
+	return <linesOfCode,file>;
 }
 
 /*
