@@ -15,8 +15,18 @@ int getLinesOfCode(M3 model){
 		// get all relevant comments
 		for(c <- [c2 | <_,c2> <- model@documentation, c2.path == l.path]){
 			// remove the comments
+			//println(c);
 			//println(readFile(c));
-			file = replaceAll(file, readFile(c), "");
+			// If the comment is multiline, insert extra newline, otherwise the next code
+			// snippet will be interpreted as 1 LOC.
+			//   foo(); /*
+			//   */ bar();
+			if(c.end.line - c.begin.line == 0){
+				file = replaceAll(file, readFile(c), "");
+			}
+			else{
+				file = replaceAll(file, readFile(c), "\n");
+			}
 		}
 		// count the lines that contain not only whitespace
 		for(/<x:.*[^\s].*(\n|\Z)>/ := file){
