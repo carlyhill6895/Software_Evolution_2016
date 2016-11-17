@@ -28,8 +28,9 @@ int getLinesOfCode(M3 model){
 				file = replaceAll(file, readFile(c), "\n");
 			}
 		}
+		//println(file);
 		// count the lines that contain not only whitespace
-		for(/<x:.*[^\s].*(\n|\Z)>/ := file){
+		for(/<x:.*[^\s].*\r?(\n|\Z)>/ := file){
 			//println(x);
 			linesOfCode += 1;
 		}
