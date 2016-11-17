@@ -48,6 +48,8 @@ list[list[int]] getRisks(M3 model){
 	list[int] cclocs = [];
 	list[list[int]] risks = [];
 	list[loc] methods = getMethods(model);
+	list[loc] bigMethods = [];
+	list[loc] complexMethods = [];
 	int ccVeryHigh = 0;
 	int ccHigh = 0;
 	int ccMedium = 0;
@@ -61,14 +63,20 @@ list[list[int]] getRisks(M3 model){
 	
 	for(m <- methods){
 		int linesOfCode = getLinesOfSrc(readFile(m));
-		if (linesOfCode > 100) {print("big method: \n <m>\n");unitSizeVeryHigh += linesOfCode;}
+		if (linesOfCode > 100) {
+			bigMethods += m; 
+			unitSizeVeryHigh += linesOfCode;
+		}
 		else if (linesOfCode > 50) unitSizeHigh += linesOfCode;
 		else if (linesOfCode > 10) unitSizeMedium += linesOfCode;
 		else unitSizeLow += linesOfCode;
 		
 		methodAST = getMethodASTEclipse(m, model = model);
 		int cc = getMethodComplexity(methodAST);
-		if (cc > 50) {print("Complex method: \n <m>\n"); ccVeryHigh += linesOfCode;}
+		if (cc > 50) {
+			complexMethods += m;
+			ccVeryHigh += linesOfCode;
+		}
 		else if (cc > 20) ccHigh += linesOfCode;
 		else if (cc > 10) ccMedium += linesOfCode;
 		else ccLow += linesOfCode;
@@ -77,7 +85,10 @@ list[list[int]] getRisks(M3 model){
 	unitSizeRanks = unitSizeRanks + unitSizeVeryHigh + unitSizeHigh + unitSizeMedium + unitSizeLow;
 	cclocs = cclocs + ccVeryHigh + ccHigh + ccMedium + ccLow;
 	risks = risks + [unitSizeRanks] + [cclocs];
-	println(risks);
+	println("Big methods: ");
+	printLocations(bigMethods);
+	println("Complex methods: ");
+	printLocations(complexMethods);
 	return risks;
 }
 
@@ -110,4 +121,11 @@ real getPercentageLoc(num riskLOC, num totalLOC){
 
 list[loc] getMethods(M3 model){
 	return [m | <_,m> <- model@containment, isMethod(m)];
+}
+
+int printLocations(list[loc] locations){
+	for(l <- locations){
+		println(l);
+	}
+	return 0;
 }
