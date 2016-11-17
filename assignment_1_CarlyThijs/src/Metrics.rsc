@@ -6,14 +6,17 @@ import lang::java::jdt::m3::Core;
 import LinesOfCode;
 import UnitComplexity;
 
-list[str] getMetrics(loc projectLocation){
+void getMetrics(loc projectLocation){
 	list[str] ranks = [];
+	println("Start building M3 model...");
 	M3 model = createM3FromEclipseProject(projectLocation);
-	println("model gemaakt");
+	println("M3 Model built\n--------------------------");
 	list[str] files = [];
 	<linesOfCode, files> = getLinesOfCode(model);
-	println("Lines Of Code (LOC) : <linesOfCode>");
-	ranks += getRankLinesOfCode(linesOfCode);
+	println("Lines Of Code (LOC): <linesOfCode>");
+	ranks += "Volume:\t\t\t<getRankLinesOfCode(linesOfCode)>";
 	ranks += getComplexityUnitSizeRanks(model);
-	return ranks;
+	println("\nResults\n--------------------------");
+	for(r <- ranks)
+		println(r);
 }

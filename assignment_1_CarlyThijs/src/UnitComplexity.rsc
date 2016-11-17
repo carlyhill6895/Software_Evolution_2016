@@ -11,26 +11,26 @@ import LinesOfCode;
 list[str] getComplexityUnitSizeRanks(M3 model){
 	list[str] ranks = [];
 	risks = getRisks(model);
-	for(risklocs <- risks)
-		ranks += getRank(risklocs, model);
+	ranks += "Unit Size:\t\t<getRank(head(risks), model, "Unit Size")>";
+	ranks += "Unit Complexity:\t<getRank(last(risks), model, "Unit Complexity")>";
 	return ranks;
 }
 
-str getRank(list[int] catLOCs, M3 model){
+str getRank(list[int] catLOCs, M3 model, str label){
 	<totalLOC,_> = getLinesOfCode(model);
 	list[real] percentages = [];
 	for(int s <-catLOCs)
 		percentages += getPercentageLoc(s, totalLOC);
-	println("percentages of loc per risk category:  <percentages>");
+	println("\nPercentages of LOC per risk category for <label>:");
 
-	num pcVeryHigh = head(percentages);
-	println("percentage very high: <pcVeryHigh>");
-	percentages = tail(percentages);
-	num pcHigh = head(percentages);
-	println("percentage high: <pcHigh>");
-	percentages = tail(percentages);
-	num pcMedium = head(percentages);
-	println("percentage medium: <pcMedium>");
+	<pcVeryHigh, percentages> = pop(percentages);
+	println("Percentage very high:\t<pcVeryHigh>");
+	<pcHigh, percentages> = pop(percentages);
+	println("Percentage high:\t<pcHigh>");
+	<pcMedium, percentages> = pop(percentages);
+	println("Percentage medium:\t<pcMedium>");
+	println("Percentage low:\t\t<head(percentages)>");
+	println("Percentage LOC outside methods: <100 - pcVeryHigh - pcHigh - pcMedium - head(percentages)>");
 
 	return if(pcMedium < 25 && pcHigh <=0 && pcVeryHigh <=0) "++";
 		else if(pcMedium <30 && pcHigh < 5 && pcVeryHigh <=0) "+";
@@ -80,9 +80,9 @@ list[list[int]] getRisks(M3 model){
 	unitSizeRanks = unitSizeRanks + unitSizeVeryHigh + unitSizeHigh + unitSizeMedium + unitSizeLow;
 	cclocs = cclocs + ccVeryHigh + ccHigh + ccMedium + ccLow;
 	risks = risks + [unitSizeRanks] + [cclocs];
-	println("Big methods: ");
+	println("\nBig methods:");
 	printLocations(bigMethods);
-	println("Complex methods: ");
+	println("\nComplex methods:");
 	printLocations(complexMethods);
 	return risks;
 }
@@ -118,5 +118,5 @@ list[loc] getCompilationUnit(loc class, M3 model) =
 
 void printLocations(list[loc] locations){
 	for(l <- locations)
-		println(l);
+		println("    <l>");
 }

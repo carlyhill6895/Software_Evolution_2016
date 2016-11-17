@@ -33,7 +33,7 @@ tuple[int, str] getLinesOfUnit(str file, loc cu, M3 model){
 	}
 	int linesOfCode = 0;
 	// count the lines that contain not only whitespace
-	for(/<x:[^\s].*\r?(\n|\Z)>/ := file)
+	for(/[^\s].*\r?(\n|\Z)/ := file)
 		linesOfCode += 1;
 	return <linesOfCode,file>;
 }
