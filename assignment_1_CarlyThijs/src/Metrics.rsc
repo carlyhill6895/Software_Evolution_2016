@@ -5,6 +5,7 @@ import lang::java::m3::Core;
 import lang::java::jdt::m3::Core;
 import LinesOfCode;
 import UnitComplexity;
+import CodeDuplication;
 
 void getMetrics(loc projectLocation){
 	list[str] ranks = [];
@@ -16,6 +17,7 @@ void getMetrics(loc projectLocation){
 	println("Lines Of Code (LOC): <linesOfCode>");
 	ranks += "Volume:\t\t\t<getRankLinesOfCode(linesOfCode)>";
 	ranks += getComplexityUnitSizeRanks(model);
+	ranks += "Code Duplication:\t<checkCodeDuplication(files, linesOfCode)>";
 	println("\nResults\n--------------------------");
 	for(r <- ranks)
 		println(r);

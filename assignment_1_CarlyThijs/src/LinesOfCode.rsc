@@ -35,6 +35,7 @@ tuple[int, str] getLinesOfUnit(str file, loc cu, M3 model){
 	// count the lines that contain not only whitespace
 	for(/[^\s].*\r?(\n|\Z)/ := file)
 		linesOfCode += 1;
+	// return the LOC and file stripped of comments
 	return <linesOfCode,file>;
 }
 
