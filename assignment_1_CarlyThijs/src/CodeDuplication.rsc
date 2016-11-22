@@ -29,12 +29,13 @@ str checkCodeDuplication(list[str] files, num LOC){
 			if(result > 0){
 				duplicateLines += result * 6;
 				// Check if further lines match and add them to the counter
-				while(result > 0 && size(clean_files) > 1){
+				while(result > 0 && size(clean_files) > size(block) + 1){
 					<ln, clean_files> = pop(clean_files);
 					block += ln;
 					result = checkBlock(block, clean_files_str);
 					duplicateLines += result;
 				}
+				clean_files_str = replaceAll(clean_files_str, intercalate("", prefix(block)), "");
 				// Reduce the block to 5 again
 				for(i <- [0..size(block) - 5])
 					<_, block> = pop(block);
@@ -51,7 +52,7 @@ str checkCodeDuplication(list[str] files, num LOC){
 			}
 		}
 		percentage = duplicateLines / LOC;
-		println("\nPercentage duplicated lines: <percentage>");
+		println("\nPercentage duplicated lines: <percentage * 100.0>");
 		return if(percentage <= 0.03) "++";
 			else if(percentage <= 0.05) "+";
 			else if(percentage <= 0.1) "o";
