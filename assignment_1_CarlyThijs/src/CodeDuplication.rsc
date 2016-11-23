@@ -9,7 +9,6 @@ tuple[int,str] checkCodeDuplication(list[str] files, num LOC){
 	for(f <- files)
 		clean_files += removeWhitespace(f);
 	clean_files_str = intercalate("", clean_files);
-	//println(clean_files);
 
 	// If the size of clean_files is smaller than 5, you can't pop 6 lines, so the result is ++ by default
 	if(size(clean_files) > 5){
@@ -20,8 +19,6 @@ tuple[int,str] checkCodeDuplication(list[str] files, num LOC){
 			<ln, clean_files> = pop(clean_files);
 			block += ln;
 		}
-		//println(block);
-		//println(clean_files);
 		// If the size of clean_files is smaller than 11, there can't be a duplicate block of 6 lines
 		while(size(clean_files) > 5){
 			result = checkBlock(block, clean_files_str);
