@@ -4,7 +4,7 @@ import IO;
 import List;
 import String;
 
-str checkCodeDuplication(list[str] files, num LOC){
+tuple[int,str] checkCodeDuplication(list[str] files, num LOC){
 	list[str] clean_files = [];
 	for(f <- files)
 		clean_files += removeWhitespace(f);
@@ -53,15 +53,15 @@ str checkCodeDuplication(list[str] files, num LOC){
 		}
 		percentage = duplicateLines / LOC;
 		println("\nPercentage duplicated lines: <percentage * 100.0>");
-		return if(percentage <= 0.03) "++";
-			else if(percentage <= 0.05) "+";
-			else if(percentage <= 0.1) "o";
-			else if(percentage <= 0.2) "-";
-			else "--";
+		return if(percentage <= 0.03) <5,"++">;
+			else if(percentage <= 0.05) <4,"+">;
+			else if(percentage <= 0.1) <3,"o">;
+			else if(percentage <= 0.2) <2,"-">;
+			else <1,"--">;
 	}
 	else{
 		println("\nPercentage duplicated lines: 0%");
-		return "++";
+		return <5,"++">;
 	}
 }
 

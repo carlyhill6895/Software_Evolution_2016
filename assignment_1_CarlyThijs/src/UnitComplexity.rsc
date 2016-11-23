@@ -8,15 +8,15 @@ import lang::java::jdt::m3::Core;
 import String;
 import LinesOfCode;
 
-list[str] getComplexityUnitSizeRanks(M3 model){
-	list[str] ranks = [];
+list[tuple[int,str]] getComplexityUnitSizeRanks(M3 model){
+	list[tuple[int,str]] ranks = [];
 	risks = getRisks(model);
-	ranks += "Unit Size:\t\t<getRank(head(risks), model, "Unit Size")>";
-	ranks += "Unit Complexity:\t<getRank(last(risks), model, "Unit Complexity")>";
+	ranks += getRank(head(risks), model, "Unit Size");
+	ranks += getRank(last(risks), model, "Unit Complexity");
 	return ranks;
 }
 
-str getRank(list[int] catLOCs, M3 model, str label){
+tuple[int,str] getRank(list[int] catLOCs, M3 model, str label){
 	<totalLOC,_> = getLinesOfCode(model);
 	list[real] percentages = [];
 	for(int s <-catLOCs)
@@ -32,11 +32,11 @@ str getRank(list[int] catLOCs, M3 model, str label){
 	println("Percentage low:\t\t<head(percentages)>");
 	println("Percentage LOC outside methods: <100 - pcVeryHigh - pcHigh - pcMedium - head(percentages)>");
 
-	return if(pcMedium < 25 && pcHigh <=0 && pcVeryHigh <=0) "++";
-		else if(pcMedium <30 && pcHigh < 5 && pcVeryHigh <=0) "+";
-		else if(pcMedium < 40 && pcHigh < 10 && pcVeryHigh <=0) "o";
-		else if(pcMedium < 50 && pcHigh < 15 && pcVeryHigh < 5) "-";
-		else "--";
+	return if(pcMedium < 25 && pcHigh <=0 && pcVeryHigh <=0) <5,"++">;
+		else if(pcMedium <30 && pcHigh < 5 && pcVeryHigh <=0) <4,"+">;
+		else if(pcMedium < 40 && pcHigh < 10 && pcVeryHigh <=0) <3,"o">;
+		else if(pcMedium < 50 && pcHigh < 15 && pcVeryHigh < 5) <2,"-">;
+		else <1,"--">;
 }
 
 list[list[int]] getRisks(M3 model){

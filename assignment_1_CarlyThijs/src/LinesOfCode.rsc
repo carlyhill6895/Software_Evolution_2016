@@ -43,8 +43,8 @@ tuple[int, str] getLinesOfUnit(str file, loc cu, M3 model){
 	give back the rank based on the Sig maintainability model (as defined on
 	http://docs.sonarqube.org/display/SONARQUBE45/SIG+Maintainability+Model+Plugin)
 */
-str getRankLinesOfCode(int linesOfCode) = "++" when linesOfCode < 66000;
-str getRankLinesOfCode(int linesOfCode) = "+" when linesOfCode < 246000;
-str getRankLinesOfCode(int linesOfCode) = "o" when linesOfCode < 665000;
-str getRankLinesOfCode(int linesOfCode) = "-" when linesOfCode < 1310000;
-str getRankLinesOfCode(int linesOfCode) = "--";
+tuple[int,str] getRankLinesOfCode(int linesOfCode) = <5,"++"> when linesOfCode < 66000;
+tuple[int,str] getRankLinesOfCode(int linesOfCode) = <4,"+"> when linesOfCode < 246000;
+tuple[int,str] getRankLinesOfCode(int linesOfCode) = <3,"o"> when linesOfCode < 665000;
+tuple[int,str] getRankLinesOfCode(int linesOfCode) = <2,"-"> when linesOfCode < 1310000;
+tuple[int,str] getRankLinesOfCode(int linesOfCode) = <1,"--">;
