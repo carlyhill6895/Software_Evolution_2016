@@ -11,7 +11,7 @@ import CodeDuplication;
 void getMetrics(loc projectLocation){
 	list[tuple[int,str]] ranks = [];
 	println("Start building M3 model...");
-	M3 model = createM3FromEclipseProject(projectLocation);
+	M3 model = getModel(projectLocation);
 	println("M3 Model built\n--------------------------");
 	list[str] files = [];
 	<linesOfCode, files> = getLinesOfCode(model);
@@ -38,7 +38,7 @@ void getMetrics(loc projectLocation){
 void getMetricsWithoutDuplication(loc projectLocation){
 	list[tuple[int,str]] ranks = [];
 	println("Start building M3 model...");
-	M3 model = createM3FromEclipseProject(projectLocation);
+	M3 model = getModel(projectLocation);
 	println("M3 Model built\n--------------------------");
 	list[str] files = [];
 	<linesOfCode, files> = getLinesOfCode(model);
@@ -66,6 +66,10 @@ private str getRank(real rank) = "-" when rank < 2.5;
 private str getRank(real rank) = "o" when rank < 3.5;
 private str getRank(real rank) = "+" when rank < 4.5;
 private str getRank(real rank) = "++";
+
+M3 getModel(loc projectLocation){
+	return createM3FromEclipseProject(projectLocation);
+}
 
 map[str,num] getMetricsTiming(){
 	return benchmark(("testProject": void() {getMetrics(|project://test_project|);}, "smallsql" : void() {getMetrics(|project://smallsql0.21_src|);}, 

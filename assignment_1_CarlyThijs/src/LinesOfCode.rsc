@@ -3,6 +3,7 @@ module LinesOfCode
 import IO;
 import String;
 import lang::java::m3::Core;
+import lang::java::jdt::m3::Core;
 
 /*
  get the lines of code from a specific source code
@@ -48,3 +49,8 @@ tuple[int,str] getRankLinesOfCode(int linesOfCode) = <4,"+"> when linesOfCode < 
 tuple[int,str] getRankLinesOfCode(int linesOfCode) = <3,"o"> when linesOfCode < 665000;
 tuple[int,str] getRankLinesOfCode(int linesOfCode) = <2,"-"> when linesOfCode < 1310000;
 tuple[int,str] getRankLinesOfCode(int linesOfCode) = <1,"--">;
+
+test bool testGetLinesOfCode(){
+	tuple[int count, list[str] second] linesOfCode = getLinesOfCode(createM3FromEclipseProject(|project://test_project|));
+	return linesOfCode.count == 27;
+}

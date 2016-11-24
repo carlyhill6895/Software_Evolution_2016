@@ -120,3 +120,26 @@ void printLocations(list[loc] locations){
 	for(l <- locations)
 		println("    <l>");
 }
+
+test bool testGetMethods(){
+	lrel[loc,loc] methods = getMethods(createM3FromEclipseProject(|project://test_project|));
+	return size(methods) == 2;
+}
+test bool testGetUnitLinesOfCode(){
+	M3 model = createM3FromEclipseProject(|project://test_project|);
+	lrel[loc,loc] methods = getMethods(model);
+	tuple[loc cu, loc method] firstMethod = head(methods);
+	tuple[loc cu, loc method] secondMethod = last(methods);
+	<linesOfCodeFirst,_> = getLinesOfUnit(readFile(firstMethod.method), head(getCompilationUnit(firstMethod.cu, model)), model);
+	<linesOfCodeSecond,_> = getLinesOfUnit(readFile(secondMethod.method), head(getCompilationUnit(secondMethod.cu, model)), model);
+	return linesOfCodeFirst == 5 && linesOfCodeSecond == 15;
+}
+test bool testGetMethodComplexity(){
+	M3 model = createM3FromEclipseProject(|project://test_project|);
+	lrel[loc,loc] methods = getMethods(model);
+	tuple[loc cu, loc method] firstMethod = head(methods);
+	tuple[loc cu, loc method] secondMethod = last(methods);
+	int complexityFirst = getMethodComplexity(getMethodASTEclipse(firstMethod.method, model = model));
+	int complexitySecond = getMethodComplexity(getMethodASTEclipse(secondMethod.method, model = model));
+	return complexityFirst == 1 && complexitySecond == 3;
+}
