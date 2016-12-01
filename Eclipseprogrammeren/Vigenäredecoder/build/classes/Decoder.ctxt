@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=
+comment0.target=Decoder()
+comment1.params=VAR1\ Codewoord
+comment1.target=java.lang.String\ decoderen(java.lang.String,\ java.lang.String)
+numComments=2
