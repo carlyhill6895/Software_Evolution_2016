@@ -7,8 +7,8 @@ import IO;
 import Set;
 import List;
 
-data ResourceDuplicationTree = rdFolder(loc id, int dup, set[ResourceDuplicationTree] folders, set[ResourceDuplicationTree] files, int size) 
-| rdFile(loc id, int dup, int size, list[loc] duplicatedLines)
+data ResourceDuplicationTree = rdFolder(loc id, num dup, set[ResourceDuplicationTree] folders, set[ResourceDuplicationTree] files, int size) 
+| rdFile(loc id, num dup, int size, list[loc] duplicatedLines)
 ;
 
 void showProjectTree(loc projectLocation, loc srcLoc){
@@ -20,7 +20,6 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 										if(locSrc.path == id.path ) sourceCode = folder(id, contents);
 									}
 	}
-	//iprintln(sourceCode);
 	set[Resource] filteredResources = {};
 	filteredSourceCode = top-down visit(sourceCode){
 		case folder(id, contents)=>folder(id, getJavaContents(contents))
@@ -31,12 +30,8 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 	ResourceDuplicationTree projectTree = mapRDTree(filteredSourceCode);
 	//iprintln(projectTree);
 	
-	//projectVis = mapVisDuplicationTreeFolders( {projectTree} );
-	//render(hvcat(projectVis, gap(10)));
-	
-	projectVisFolders = mapVisDuplicationTreeOnlyFolders({projectTree});
-	//iprintln(projectVisFolders);
-	render(hvcat(projectVisFolders, gap(100)));
+	projectVis = mapVisDuplicationTreeFolders( {projectTree} );
+	render(space(hvcat(projectVis, gap(10))));
 	
 }
 
@@ -44,7 +39,7 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 private ResourceDuplicationTree mapRDTree(folder(id, contents)) = rdFolder(id, 10, getRDTFolders(contents), getRDTFiles(contents), size(contents));
 private ResourceDuplicationTree mapRDTree(file(id)) = rdFile(id, 10, 50, []);
 
-private Figure getVisDuplicationLeaf(rdFile(id, dup, size, duplicatedLines)) = box(text(id.path), fillColor("grey"));
+private Figure getVisDuplicationLeaf(rdFile(id, dup, sz, duplicatedLines)) = box(text(id.path), fillColor("grey"), mouseOver(box(size(sz), fillColor("red"))),gap(5));
 
 private list[Figure] mapVisDuplicationTreeOnlyFolders(set[ResourceDuplicationTree] folders){
 	list[Figure] visFolders = [];
@@ -61,14 +56,20 @@ private list[Figure] mapVisDuplicationTreeOnlyFolders(set[ResourceDuplicationTre
 private list[Figure] mapVisDuplicationTreeFolders(set[ResourceDuplicationTree] folders) {
 	list[Figure] visFolders = [];
 	for (f <- folders) {
-	 if(rdFolder(id, dup, {}, {}, size) := f)
-	 	visFolders = visFolders + box(text(id.path), fillColor("white"));
-	 else if( rdFolder(id, dup, fs, {}, size):= f) 
-	 	visFolders += tree(box(text(id.path), fillColor("white")), mapVisDuplicationTreeFolders(fs), std(gap(20)));
-	 else if( rdFolder(id, dup, {}, fs, size):=f)
-	 	visFolders += tree(box(text(id.path), fillColor("white")), mapVisDuplicationTreeFiles(fs), std(gap(20)));
-	 else if( rdFolder(id, dup, fos, fis, size):= f)
-	 	visFolders += tree(box(text(id.path), fillColor("white")), (mapVisDuplicationTreeFolders(fos) + mapVisDuplicationTreeFiles(fis)), std(gap(20)));
+		 if(rdFolder(id, dup, {}, {}, size) := f)
+		 	visFolders = visFolders + box(text(id.path), fillColor("white"));
+		 else if( rdFolder(id, dup, fs, {}, size):= f) 
+		 	visFolders += tree(box(text(id.path), fillColor("white")), mapVisDuplicationTreeFolders(fs), std(gap(20)));
+		 else if( rdFolder(id, dup, {}, fs, sz):=f){
+		 		list[Figure] files = mapVisDuplicationTreeFiles(fs);
+		 		files = [vcat(files, gap(5))];
+		 		visFolders += tree(box(text(id.path), fillColor("white")), files, std(gap(20)));
+		 	}
+		 else if( rdFolder(id, dup, fos, fis, sz):= f){
+		 	list[Figure] files = mapVisDuplicationTreeFiles(fis);
+		 	files = [vcat(files, gap(5))];
+		 	visFolders += tree(box(text(id.path), fillColor("white")), (mapVisDuplicationTreeFolders(fos) + files), std(gap(20)));
+		 }
 	 }
 	
 	return visFolders;
