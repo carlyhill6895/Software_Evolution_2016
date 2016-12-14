@@ -5,13 +5,12 @@ import lang::java::m3::Core;
 import IO;
 import String;
 
-map[loc, list[loc]] getUnits(loc projectLocation){
-	map[loc, list[loc] ] cums = ();
+map[loc, str] getUnits(loc projectLocation){
 	M3 model = createM3FromEclipseProject(projectLocation);
 	map[loc,str] cufls = getCompilationUnits(model);
 	println(cufls);
 	
-	return cums;
+	return cufls;
 }
 
 
