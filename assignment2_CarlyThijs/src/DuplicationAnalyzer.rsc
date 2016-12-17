@@ -14,6 +14,7 @@ public void findReportProbs(set[list[loc]] allDuplications){
 	real totalLinesOfCode = 1000.0;
 	num duplicatedLines = 0;
 	num biggestCloneLength = 0;
+	amountClones = 0;
 	for(list[loc] dupGroup <- duplications){
 		amountClones += size(dupGroup);
 		for(loc dup <- dupGroup){
@@ -30,6 +31,7 @@ public void findReportProbs(set[list[loc]] allDuplications){
 public tuple[num, list[loc]] findVisualizationProbs(loc file){
 	list[loc] duplicatesInFile = [];
 	num duplicatedLinesInFile = 0;
+	amountClones = 0;
 	for(list[loc] dupGroup <- duplications){
 		amountClones += size(dupGroup);
 		for(loc dup <- dupGroup){

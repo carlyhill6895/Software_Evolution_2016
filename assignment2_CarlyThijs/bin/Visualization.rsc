@@ -34,13 +34,18 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 }
 
 
-private ResourceDuplicationTree mapRDTree(folder(id, contents)) = rdFolder(id, 10, getRDTFolders(contents), getRDTFiles(contents));
+private ResourceDuplicationTree mapRDTree(folder(id, contents)) = rdFolder(id, 0.1, getRDTFolders(contents), getRDTFiles(contents));
 private ResourceDuplicationTree mapRDTree(file(id)) {
 	tuple[num pcdup, list[loc] dups] probs =  findVisualizationProbs(id);
  	return rdFile(id, probs.pcdup, probs.dups);
 }
 
-private Figure getVisDuplicationLeaf(rdFile(id, dup, duplicatedLines)) = box(text(id.path), fillColor("grey"), mouseOver(box(size(20), fillColor("red"))),gap(5));
+private Figure getVisDuplicationLeaf(rdFile(id, dup, duplicatedLines)) { 
+	locationFigures = for(duploc <- duplicatedLines){
+		append(text("(<duploc.begin.line>, <duploc.begin.column>) - (<duploc.end.line>, <duploc.end.column>)", fontSize(12), fontColor("black"), gap(1)));
+	}
+	return box(text(id.path), fillColor(interpolateColor(color("Green"), color("Red"), dup)), mouseOver(box(vcat(locationFigures),gap(5))));
+}
 //TODO: on mouseOver show the duplications
 //TODO: colors!
 

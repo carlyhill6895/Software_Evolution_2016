@@ -1,6 +1,7 @@
 module TestProject
 import DuplicationAnalyzer;
 import Report;
+import Visualization;
 import lang::java::m3::AST;
 import IO;
 
@@ -14,8 +15,10 @@ public void main(){
 	println("amount clones: <getTotalAmountClones()>");
 	println("biggest Clone: <getBiggestClone()>");
 	println("example Clone: <getExampleClone()>");
+	showProjectTree(|project://CaesarCipher|, |project://CaesarCipher/src|);
 	
 	generateReport(|project://CaesarCipher|);
+	
 }
 
 test bool testPercentageDuplication() = getPercentageTotalDuplication() == 0.002;
