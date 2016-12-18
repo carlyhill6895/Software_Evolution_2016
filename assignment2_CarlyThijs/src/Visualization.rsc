@@ -25,10 +25,10 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 	filteredSourceCode = top-down visit(sourceCode){
 		case folder(id, contents)=>folder(id, getJavaContents(contents))
 	}
-	
+
 	ResourceDuplicationTree projectTree = mapRDTree(filteredSourceCode);
 	//iprintln(projectTree);
-	
+
 	projectVis = mapVisDuplicationTreeFolders( {projectTree} );
 	render(space(hvcat(projectVis, gap(10))));
 	
@@ -63,7 +63,7 @@ private list[Figure] mapVisDuplicationTreeOnlyFolders(set[ResourceDuplicationTre
 	 else if (rdFolder(id, dup, fs, _) := f) 
 	 	visFolders += tree(box(text(id.path), fillColor("white")), mapVisDuplicationTreeOnlyFolders(fs), std(gap(20)), hcenter());
 	 }
-	
+
 	return visFolders;
 }
 
@@ -85,12 +85,11 @@ private list[Figure] mapVisDuplicationTreeFolders(set[ResourceDuplicationTree] f
 		 	visFolders += tree(box(text(id.path), fillColor("white")), (mapVisDuplicationTreeFolders(fos) + files), std(gap(20)));
 		 }
 	 }
-	
+
 	return visFolders;
 }
 
 private list[Figure] mapVisDuplicationTreeFiles(set[ResourceDuplicationTree] files) = toList(mapper(files, getVisDuplicationLeaf));
-
 
 private set[ResourceDuplicationTree] getRDTFolders (contents){
 	newContents = {};
@@ -107,8 +106,6 @@ private set[ResourceDuplicationTree] getRDTFiles (contents){
 	}
 	return newContents;
 }
-
-
 
 private set[Resource] getJavaContents(contents) {
 	for (rc <- contents){
