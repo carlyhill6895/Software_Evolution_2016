@@ -2,9 +2,9 @@ module Report
 import IO;
 import DuplicationAnalyzer;
 
-public void generateReport(loc projectLocation, map[int, list[loc]] duplications, map[loc, int] locPerFile){
+public void generateReport(loc projectLocation, map[int, list[loc]] duplications, map[loc, int] locPerFile, int totalLoc){
 	loc reportFile = projectLocation + "report.txt";
-	findReportProbs(duplications, locPerFile);
+	findReportProbs(duplications, locPerFile, totalLoc);
 	writeFile(reportFile, "Report\n\n");
 	appendToFile(reportFile, "Percentage of duplicated lines: <getPercentageTotalDuplication()>\n");
 	appendToFile(reportFile, "Amount of clone classes: <getAmountCloneClasses()>\n");

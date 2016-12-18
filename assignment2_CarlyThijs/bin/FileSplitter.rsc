@@ -8,7 +8,8 @@ import String;
 import List;
 import Map;
 
-tuple[map[int, list[loc]], map[loc,int]] findDuplications(loc project, int duplicationType){
+//returns the duplications, lines of code per file and total lines of code
+tuple[map[int, list[loc]], map[loc,int], int] findDuplications(loc project, int duplicationType){
 	<LOC, LOCbyFile, ASTbyFile> = getDuplication(project, duplicationType);
 	map[int, list[loc]] acc = ();
 	for(i <- ASTbyFile){
@@ -21,9 +22,10 @@ tuple[map[int, list[loc]], map[loc,int]] findDuplications(loc project, int dupli
 		else
 			acc = delete(acc, i);
 	}
-	return <acc, LOCbyFile>;
+	return <acc, LOCbyFile, LOC>;
 }
 
+//returns the duplications
 tuple[int, map[loc, int], map[loc, Declaration]] getDuplication(loc projectLocation, int dupType){
 	M3 model = createM3FromEclipseProject(projectLocation);
 	<LOC, fileloc> = getLoc(model);
@@ -44,6 +46,7 @@ private default map[loc, Declaration] getAsts(M3 model, _){
 	return asts;
 }
 
+//creates the hash for different declarations
 tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] acc){
 	int hash = 0;
 	visit(decl){
@@ -125,6 +128,7 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 	catch: return <hash, acc>;
 }
 
+//returns the hash for an expression
 tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list[loc]] acc){
 	int hash = 0;
 	visit(expr){
@@ -218,6 +222,7 @@ tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list
 	catch: return <hash, acc>;
 }
 
+//returns the hash for a statement
 tuple[int, map[int, list[loc]]] getHashStatement(Statement s, map[int, list[loc]] acc){
 	int hash = 0;
 	visit(s){
@@ -340,6 +345,7 @@ tuple[int, map[int, list[loc]]] getHashType(Type t, map[int, list[loc]] acc){
 	return <hash, acc>;
 }
 
+//functions for returning hashes for lists
 tuple[int, map[int, list[loc]]] hashDeclarationList(list[Declaration] tree, map[int, list[loc]] acc){
 	list[tuple[int, loc]] hashes = [];
 	for(i <- tree){
@@ -367,6 +373,7 @@ tuple[int, map[int, list[loc]]] hashStatementList(list[Statement] tree, map[int,
 	return hashSubLists(hashes, acc);
 }
 
+//functions for hashing declaration types
 tuple[int, map[int, list[loc]]] hashTypeAndString(Type t, str s, map[int, list[loc]] acc){
 	<hash, acc> = getHashType(t, acc);
 	return <hash + hashString(s), acc>;

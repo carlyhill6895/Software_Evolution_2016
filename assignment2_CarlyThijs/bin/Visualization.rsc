@@ -37,6 +37,7 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 private ResourceDuplicationTree mapRDTree(folder(id, contents)) = rdFolder(id, 0.1, getRDTFolders(contents), getRDTFiles(contents));
 private ResourceDuplicationTree mapRDTree(file(id)) {
 	tuple[num pcdup, list[loc] dups] probs =  findVisualizationProbs(id);
+	println("percentage duplication found for file <id>: <probs.pcdup>");
  	return rdFile(id, probs.pcdup, probs.dups);
 }
 
