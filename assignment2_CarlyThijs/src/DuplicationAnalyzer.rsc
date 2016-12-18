@@ -44,7 +44,9 @@ public tuple[num, list[loc]] findVisualizationProbs(loc file){
 			}
 		}
 	}
-	num percentageDuplicationInFile = duplicatedLinesInFile/50.0; //TODO: get lines of code from file
+	int locFile  = locPerFile[file];
+	println("loc voor file <file>: <locFile>");
+	num percentageDuplicationInFile = duplicatedLinesInFile/locFile; //TODO: get lines of code from file
 	return <percentageDuplicationInFile, duplicatesInFile>;
 }
 

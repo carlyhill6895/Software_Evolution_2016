@@ -27,7 +27,6 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 	}
 
 	ResourceDuplicationTree projectTree = mapRDTree(filteredSourceCode);
-	//iprintln(projectTree);
 
 	projectVis = mapVisDuplicationTreeFolders( {projectTree} );
 	render(space(hvcat(projectVis, gap(10))));

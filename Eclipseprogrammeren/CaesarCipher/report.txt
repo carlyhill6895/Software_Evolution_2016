@@ -4,4 +4,4 @@ Percentage of duplicated lines: 0.528
 Amount of clone classes: 42
 Total amount of clones: 256
 Biggest Clone: i < VAR1.length()
-Example Clone: Exception e
+Example Clone: VAR1 = "Z"
