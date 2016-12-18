@@ -2,6 +2,7 @@ module Visualization
 import DuplicationAnalyzer;
 import vis::Figure;
 import vis::Render;
+import vis::KeySym;
 import util::Resources;
 import IO;
 import Set;
@@ -44,10 +45,15 @@ private Figure getVisDuplicationLeaf(rdFile(id, dup, duplicatedLines)) {
 	locationFigures = for(duploc <- duplicatedLines){
 		append(text("(<duploc.begin.line>, <duploc.begin.column>) - (<duploc.end.line>, <duploc.end.column>)", fontSize(12), fontColor("black"), gap(1)));
 	}
-	return box(text(id.path), fillColor(interpolateColor(color("Green"), color("Red"), dup)), mouseOver(box(vcat(locationFigures),gap(5))));
+	return box(text(id.path), fillColor(interpolateColor(color("Green"), color("Red"), dup)), mouseOver(box(vcat(locationFigures), onMouseDown(
+		bool(int butnr, map[KeyModifier, bool] modifiers) {
+		if(butnr == 1){
+			iprintln(duplicatedLines);
+			return true;
+		}
+		else return false;
+	}),gap(5))));
 }
-//TODO: on mouseOver show the duplications
-//TODO: colors!
 
 private list[Figure] mapVisDuplicationTreeOnlyFolders(set[ResourceDuplicationTree] folders){
 	list[Figure] visFolders = [];
