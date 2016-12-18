@@ -8,10 +8,12 @@ import IO;
 import Set;
 import List;
 
+//datatype for tree that contains duplication information
 data ResourceDuplicationTree = rdFolder(loc id, num dup, set[ResourceDuplicationTree] folders, set[ResourceDuplicationTree] files) 
 | rdFile(loc id, num dup, list[loc] duplications)
 ;
 
+//main method to show the project tree
 void showProjectTree(loc projectLocation, loc srcLoc){
 	Resource projectResource = getProject(projectLocation);
 	Resource sourceCode = project(projectLocation, {});
@@ -33,7 +35,18 @@ void showProjectTree(loc projectLocation, loc srcLoc){
 	
 }
 
+private set[Resource] getJavaContents(contents) {
+	for (rc <- contents){
+		if( file(L) := rc) {
+			if (/java/ !:= L.path) {
+				contents = contents - {file(L)};
+			}
+		}
+	}
+	return contents;
+}
 
+//methods to make ResourceTree into ResourceDuplicationTree
 private ResourceDuplicationTree mapRDTree(folder(id, contents)) = rdFolder(id, 0.1, getRDTFolders(contents), getRDTFiles(contents));
 private ResourceDuplicationTree mapRDTree(file(id)) {
 	tuple[num pcdup, list[loc] dups] probs =  findVisualizationProbs(id);
@@ -41,6 +54,23 @@ private ResourceDuplicationTree mapRDTree(file(id)) {
  	return rdFile(id, probs.pcdup, probs.dups);
 }
 
+private set[ResourceDuplicationTree] getRDTFolders (contents){
+	newContents = {};
+	for(rc <- contents){
+		if (folder(_, _) := rc) newContents += mapRDTree(rc);
+	}
+	return newContents;
+}
+
+private set[ResourceDuplicationTree] getRDTFiles (contents){
+	newContents = {};
+	for( rc <- contents){
+		if(file(_) := rc ) newContents+= mapRDTree(rc);
+	}
+	return newContents;
+}
+
+//methods for making vis trees from duplication trees
 private Figure getVisDuplicationLeaf(rdFile(id, dup, duplicatedLines)) { 
 	locationFigures = for(duploc <- duplicatedLines){
 		append(text("(<duploc.begin.line>, <duploc.begin.column>) - (<duploc.end.line>, <duploc.end.column>)", fontSize(12), fontColor("black"), gap(1)));
@@ -91,30 +121,3 @@ private list[Figure] mapVisDuplicationTreeFolders(set[ResourceDuplicationTree] f
 
 private list[Figure] mapVisDuplicationTreeFiles(set[ResourceDuplicationTree] files) = toList(mapper(files, getVisDuplicationLeaf));
 
-private set[ResourceDuplicationTree] getRDTFolders (contents){
-	newContents = {};
-	for(rc <- contents){
-		if (folder(_, _) := rc) newContents += mapRDTree(rc);
-	}
-	return newContents;
-}
-
-private set[ResourceDuplicationTree] getRDTFiles (contents){
-	newContents = {};
-	for( rc <- contents){
-		if(file(_) := rc ) newContents+= mapRDTree(rc);
-	}
-	return newContents;
-}
-
-private set[Resource] getJavaContents(contents) {
-	for (rc <- contents){
-		if( file(L) := rc) {
-			if (/java/ !:= L.path) {
-				contents = contents - {file(L)};
-				//iprintln(contents);
-			}
-		}
-	}
-	return contents;
-}

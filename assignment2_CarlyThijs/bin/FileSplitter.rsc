@@ -22,6 +22,8 @@ tuple[map[int, list[loc]], map[loc,int], int] findDuplications(loc project, int 
 		else
 			acc = delete(acc, i);
 	}
+	println("found duplications: ");
+	iprintln(acc);
 	return <acc, LOCbyFile, LOC>;
 }
 
@@ -52,12 +54,12 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 	visit(decl){
 		case \compilationUnit(_, tree): <hash, acc> = hashDeclarationList(tree, acc);
 		case \compilationUnit(_, _, tree): <hash, acc> = hashDeclarationList(tree, acc);
-		case \enum(name, types, tree1, tree2): <hash, acc> = hashClass(name, types, tree1 + tree2, decl, acc);
+		case \enum(name, types, tree1, tree2):<hash, acc> = hashClass(name, types, tree1 + tree2, decl, acc);
 		case \enumConstant(name, tree): <hash, acc> = hashEnumConstant(name, tree, acc);
 		case \enumConstant(name, tree1, tree2):{
 			<hash, acc> = hashEnumConstant(name, tree1, acc);
 			<hash2, acc> = getHash(tree2, acc);
-			hash += hash2; // TODO: ""
+			hash += hash2; 
 		}
 		case \class(name, tree1, tree2, tree3): <hash, acc> = hashClass(name, tree1 + tree2, tree3, decl, acc);
 		case \class(tree): <hash, acc> = hashDecarationList(tree, acc);
@@ -66,17 +68,17 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 		case \initializer(s):{
 			<hash, acc> = getHashStatement(s, acc);
 			try
-				hash += hashString("<decl@typ>"); //TODO: ""
+				hash += hashString("<decl@typ>"); 
 			catch: break;
 		}
 		case \method(ret, name, tree1, tree2):{
 			<hash, acc> = hashMethod(name, tree1, tree2, decl, acc);
-			<hash2, acc> = getHashType(t, acc); //TODO: ""
+			<hash2, acc> = getHashType(t, acc); 
 			hash += hash2;
 		}
 		case \method(ret, name, tree1, tree2, s):{
 			<hash, acc> = hashSMethod(s, name, tree1, tree2, decl, acc);
-			<hash2, acc> = getHashType(ret, acc); //TODO: ""
+			<hash2, acc> = getHashType(ret, acc); 
 			hash += hash2;
 		}
 		case \constructor(name, tree1, tree2, s): <hash, acc> = hashSMethod(s, name, tree1, tree2, decl, acc);
@@ -84,7 +86,7 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 		case \typeParameter(name, types):{
 			hash = hashString(name);
 			for(i <- types){
-				<hash2, acc> = getHashType(i, acc); // TODO: ""
+				<hash2, acc> = getHashType(i, acc); 
 				hash += hash2;
 			}
 		}
@@ -109,7 +111,7 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 		}
 		case \parameter(t, name, val):{
 			<hash, acc> = getHashType(t, acc);
-			hash += val + hashString(name); // TODO
+			hash += val + hashString(name); 
 		}
 		case \vararg(t, name):{
 			<hash, acc> = getHashType(t, acc);
@@ -117,7 +119,6 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 				hash += hashString(name + "<decl@typ>");
 			catch: hash += hashString(name);
 		}
-		//default: return <0, acc>;
 	}
 	list[loc] l;
 	try
@@ -174,33 +175,36 @@ tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list
 		case \methodCall(b, name, tree):{
 			<hash, acc> = hashMethodCall(b, name, tree, acc);
 			try
-				hash += hashString("<expr@typ>"); // TODO
+				hash += hashString("<expr@typ>"); 
 			catch: break;
 		}
 		case \methodCall(b, expr1, name, tree):{
 			<hash, acc> = hashMethodCall(b, name, tree, acc);
 			<hash2, acc> = getHashExpression(expr1, acc);
-			hash += hash2; // TODO
+			hash += hash2; 
 		}
 		case \null(): hash = hashString("null()");
+		case \number(v): hash = hashString(v);
 		case \booleanLiteral(b): hash = hashString("<b>()");
+		case \stringLiteral(v): hash = hashString(v);
 		case \type(t): <hash, acc> = getHashType(t, acc);
-		case \variable(name, v): hash = v + hashString(name); // TODO
+		case \variable(name, v): hash = v + hashString(name); 
 		case \variable(name, v, expr1):{
 			<hash, acc> = getHashExpression(expr1, acc);
-			hash += v + hashString(name); // TODO
+			hash += v + hashString(name); 
 		}
 		case \bracket(expr1): <hash, acc> = getHashExpression(expr1, acc);
 		case \this(): hash = hashString("this()");
 		case \this(expr1):{
 			<hash, acc> = getHashExpression(expr1, acc);
-			hash += hashString("this()"); // TODO
+			hash += hashString("this()");
 		}
 		case \super(): hash = hashString("super()");
 		case \declarationExpression(Declaration decl): <hash, acc> = getHash(decl, acc);
 		case \infix(expr1, op, expr2): <hash, acc> = hashAssignment(expr1, op, expr2, acc);
 		case \postfix(expr1, op): <hash, acc> = hashExprStr(expr1, op, acc);
 		case \prefix(op, expr1): <hash, acc> = hashExprStr(expr1, op, acc);
+		case \simpleName(v): hash = hashString(v);
 		case \normalAnnotation(name, tree):{
 			<hash, acc> = hashExprList(tree, acc);
 			hash += hashString(name);
@@ -211,7 +215,7 @@ tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list
 				hash = hashString(val + "<expr@typ>");
 			catch: hash = hashString(val);
 		}
-		//default: return <0, acc>;
+		
 	}
 	list[loc] l;
 	try
@@ -305,7 +309,7 @@ tuple[int, map[int, list[loc]]] getHashStatement(Statement s, map[int, list[loc]
 			hash += hash2;
 		}
 		case \constructorCall(b, tree): <hash, acc> = hashConstructor(b, tree, acc);
-		//default: return <0, acc>;
+		
 	}
 	list[loc] l;
 	try
@@ -340,7 +344,7 @@ tuple[int, map[int, list[loc]]] getHashType(Type t, map[int, list[loc]] acc){
 		case wildcard(): hash = hashString("wildcard");
 		case upperbound(t2): <hash, acc> = hashTypeAndString(t2, "upperbound", acc);
 		case lowerbound(t2): <hash, acc> = hashTypeAndString(t2, "lowerbound", acc);
-		//default: hash = hashString("<t>");
+		
 	}
 	return <hash, acc>;
 }
@@ -399,28 +403,28 @@ tuple[int, map[int, list[loc]]] hashExprS(Expression expr, Statement s, map[int,
 tuple[int, map[int, list[loc]]] hashFor(list[Expression] tree, Statement s, map[int, list[loc]] acc){
 	<hash, acc> = hashExprList(tree, acc);
 	<hash2, acc> = getHashStatement(s, acc);
-	return <hash + hash2, acc>; // TODO
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashTwoExpr(Expression expr1, Expression expr2, map[int, list[loc]] acc){
 	<hash, acc> = getHashExpression(expr1, acc);
 	<hash2, acc> = getHashExpression(expr2, acc);
-	return <hash + hash2, acc>; // TODO
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashExprStr(Expression expr, str op, map[int, list[loc]] acc){
 	<hash, acc> = getHashExpression(expr, acc);
-	return <hash + hashString(op), acc>; // TODO
+	return <hash + hashString(op), acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashAssignment(Expression expr1, str op, Expression expr2, map[int, list[loc]] acc){
 	<hash, acc> = hashTwoExpr(expr1, expr2, acc);
-	return <hash + hashString(op), acc>; // TODO
+	return <hash + hashString(op), acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashMethodCall(bool b, str name, list[Expression] tree, map[int, list[loc]] acc){
 	<hash, acc> = hashConstructor(b, tree, acc);
-	return <hash + hashString(name), acc>; // TODO
+	return <hash + hashString(name), acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashNewObject(value exprdecl, Type t, list[Expression] tree, map[int, list[loc]] acc){
@@ -429,30 +433,30 @@ tuple[int, map[int, list[loc]]] hashNewObject(value exprdecl, Type t, list[Expre
 		case Expression: <hash, acc> = getHashExpression(exprdecl, acc);
 	}
 	<hash2, acc> = hashTypeAndTree(t, tree, acc);
-	return <hash + hash2, acc>; // TODO
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashTypeAndTree(Type t, list[Expression] tree, map[int, list[loc]] acc){
 	<hash, acc> = hashExprList(tree, acc);
 	<hash2, acc> = getHashType(t, acc);
-	return <hash + hash2, acc>; // TODO
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashVariable(Type t, list[Expression] tree, Declaration self, map[int, list[loc]] acc){
 	<hash, acc> = hashExprList(tree, acc);
-	<hash2, acc> = getHashType(t, acc); //TODO: ""
-	return <hash + hash2, acc>; // TODO
+	<hash2, acc> = getHashType(t, acc); 
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashClass(str name, list[Type] types, list[Declaration] tree, Declaration self, map[int, list[loc]] acc){
 	<hash, acc> = hashDeclTypes(types, tree, acc);
-	return <hash + hashString(name), acc>; // TODO: ""
+	return <hash + hashString(name), acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashDeclTypes(list[Type] types, list[Declaration] tree, map[int, list[loc]] acc){
 	<hash, acc> = hashDeclarationList(tree, acc);
 	for(i <- types){
-		<hash2, acc> = getHashType(i, acc); // TODO: ""
+		<hash2, acc> = getHashType(i, acc); 
 		hash += hash2;
 	}
 	return <hash, acc>;
@@ -460,19 +464,19 @@ tuple[int, map[int, list[loc]]] hashDeclTypes(list[Type] types, list[Declaration
 
 tuple[int, map[int, list[loc]]] hashEnumConstant(str name, list[Expression] tree, map[int, list[loc]] acc){
 	<hash, acc> = hashExprList(tree, acc);
-	return <hash + hashString(name), acc>; // TODO
+	return <hash + hashString(name), acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashSMethod(Statement s, str name, list[Declaration] tree1, list[Expression] tree2, Declaration self, map[int, list[loc]] acc){
 	<hash, acc> = hashMethod(name, tree1, tree2, self, acc);
 	<hash2, acc> = getHashStatement(s, acc);
-	return <hash + hash2, acc>; // TODO
+	return <hash + hash2, acc>; 
 }
 
 tuple[int, map[int, list[loc]]] hashMethod(str name, list[Declaration] tree, list[Expression] tree2, Declaration self, map[int, list[loc]] acc){
 	<hash, acc> = hashDeclarationList(tree, acc);
 	<hash2, acc> = hashExprList(tree2, acc);
-	return <hash + hash2 + hashString(name), acc>; // TODO
+	return <hash + hash2 + hashString(name), acc>; 
 }
 
 // This function hashes all sublists (so not subsequences!) and returns the final hash of the list.
@@ -482,7 +486,7 @@ tuple[int, map[int, list[loc]]] hashSubLists(list[tuple[int, loc]] l, map[int, l
 	int i = 0;
 	for(i < size(rest)){
 		<<x, hashl2>, rest> = pop(rest);
-		hash += x; // TODO: operator
+		hash += x; 
 		hashl.end = hashl2.end;
 		list[loc] l2;
 		try

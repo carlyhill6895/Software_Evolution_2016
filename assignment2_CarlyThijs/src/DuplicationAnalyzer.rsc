@@ -10,12 +10,14 @@ private map[loc, int] locPerFile = ();
 private real percentageTotalDuplication = 0.0;
 private int amountClones = 0;
 private loc biggestClone;
+//seems to be a good line length: since duplications are also only colums parts of lines need to be estimated
+private real AVERAGE_LINE_LENGTH = 60.0;
 
+//get probs for report
 public void findReportProbs(map[int, list[loc]] allDuplications, map[loc, int] allLocPerFile, int totalLoc){
 	duplications = allDuplications;
 	locPerFile = allLocPerFile;
 	if(duplications == ()) throw "No duplications were found so no probs can be found...";
-	real totalLinesOfCode = 1000.0;
 	num duplicatedLines = 0;
 	num biggestCloneLength = 0;
 	amountClones = 0;
@@ -24,14 +26,17 @@ public void findReportProbs(map[int, list[loc]] allDuplications, map[loc, int] a
 		for(loc dup <- dupGroup){
 			int length = dup.length;
 			duplicatedLines += length;
-			if(length > biggestCloneLength) biggestClone = dup;
+			if(length > biggestCloneLength) {
+				biggestCloneLength = length;
+				biggestClone = dup;
+			}
 		}
 	}
-	duplicatedLines = duplicatedLines/100.0;
-	println("gevonden duplicated lines: <duplicatedLines>");
-	percentageTotalDuplication = duplicatedLines/totalLinesOfCode;
+	duplicatedLines = duplicatedLines/AVERAGE_LINE_LENGTH;
+	percentageTotalDuplication = duplicatedLines/toReal(totalLoc);
 }
 
+//get probs for visualization
 public tuple[num, list[loc]] findVisualizationProbs(loc fileLoc){
 	list[loc] duplicatesInFile = [];
 	num duplicatedLinesInFile = 0;
@@ -40,7 +45,6 @@ public tuple[num, list[loc]] findVisualizationProbs(loc fileLoc){
 		amountClones += size(dupGroup);
 		for(loc dup <- dupGroup){
 			if(dup.file == fileLoc.file) {
-				println("duplicatie <dup> gevonden voor bestand <fileLoc>!");
 				duplicatesInFile += dup;
 				duplicatedLinesInFile +=dup.length;
 			}
@@ -52,14 +56,12 @@ public tuple[num, list[loc]] findVisualizationProbs(loc fileLoc){
 			locFile = locPerFile[key];
 		}
 	}
-	duplicatedLinesInFile = duplicatedLinesInFile/100.0;
-	println("loc voor file <fileLoc>: <locFile>");
-	num percentageDuplicationInFile = duplicatedLinesInFile/toReal(locFile); //TODO: get lines of code from file
-	println(duplicatedLinesInFile);
+	duplicatedLinesInFile = duplicatedLinesInFile/AVERAGE_LINE_LENGTH;
+	num percentageDuplicationInFile = duplicatedLinesInFile/toReal(locFile);
 	return <percentageDuplicationInFile, duplicatesInFile>;
 }
 
-
+//get methods for probs
 public real getPercentageTotalDuplication() = percentageTotalDuplication;
 public int getAmountCloneClasses() = size(duplications);
 public int getTotalAmountClones() = amountClones;
