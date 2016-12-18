@@ -18,7 +18,6 @@ public void main(){
 	showProjectTree(|project://CaesarCipher|, |project://CaesarCipher/src|);
 
 	generateReport(|project://CaesarCipher|);
-	
 }
 
 test bool testPercentageDuplication() = getPercentageTotalDuplication() == 0.002;

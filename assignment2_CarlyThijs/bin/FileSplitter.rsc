@@ -7,11 +7,11 @@ import IO;
 import String;
 import List;
 
-value foo(loc project){
-	<x, y, z> = getDuplication(project, 1);
+value example(loc project, int duplicationType){
+	<LOC, LOCbyFile, ASTbyFile> = getDuplication(project, duplicationType);
 	map[int, list[loc]] acc = ();
-	for(i <- z)
-		<_, acc> = getHash(z[i], acc);
+	for(i <- ASTbyFile)
+		<_, acc> = getHash(ASTbyFile[i], acc);
 	return acc;
 }
 
