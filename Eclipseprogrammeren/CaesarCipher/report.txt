@@ -1,7 +1,7 @@
 Report
 
-Percentage of duplicated lines: 0.002
-Amount of clone classes: 1
-Total amount of clones: 2
-Biggest Clone: VAR1.charAt(i);
-Example Clone: VAR1.charAt(i)
+Percentage of duplicated lines: 0.528
+Amount of clone classes: 42
+Total amount of clones: 256
+Biggest Clone: i < VAR1.length()
+Example Clone: Exception e

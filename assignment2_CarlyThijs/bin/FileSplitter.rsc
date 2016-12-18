@@ -8,11 +8,12 @@ import String;
 import List;
 import Map;
 
-map[int, list[loc]] findDuplications(loc project, int duplicationType){
+tuple[map[int, list[loc]], map[loc,int]] findDuplications(loc project, int duplicationType){
 	<LOC, LOCbyFile, ASTbyFile> = getDuplication(project, duplicationType);
 	map[int, list[loc]] acc = ();
-	for(i <- ASTbyFile)
+	for(i <- ASTbyFile){
 		<_, acc> = getHash(ASTbyFile[i], acc);
+		}
 	for(i <- acc){
 		list[loc] l = dup(acc[i]);
 		if(size(l) > 1)
@@ -20,14 +21,13 @@ map[int, list[loc]] findDuplications(loc project, int duplicationType){
 		else
 			acc = delete(acc, i);
 	}
-	return acc;
+	return <acc, LOCbyFile>;
 }
 
 tuple[int, map[loc, int], map[loc, Declaration]] getDuplication(loc projectLocation, int dupType){
 	M3 model = createM3FromEclipseProject(projectLocation);
 	<LOC, fileloc> = getLoc(model);
 	map[loc, Declaration] asts = getAsts(model, dupType);
-	iprintln(asts);
 	return <LOC, fileloc, asts>;
 }
 

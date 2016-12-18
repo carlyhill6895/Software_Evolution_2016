@@ -1,25 +1,27 @@
 module DuplicationAnalyzer
 import IO;
-import Set;
 import List;
+import Map;
+import Set;
 
-private set[list[loc]] duplications = {};
+private map[int, list[loc]] duplications = ();
+private map[loc, int] locPerFile = ();
 private real percentageTotalDuplication = 0.0;
 private int amountClones = 0;
 private loc biggestClone;
 
-public void findReportProbs(map[int, list[loc]] allDuplications){
+public void findReportProbs(map[int, list[loc]] allDuplications, map[loc, int] allLocPerFile){
 	duplications = allDuplications;
+	locPerFile = allLocPerFile;
 	if(duplications == ()) throw "No duplications were found so no probs can be found...";
 	real totalLinesOfCode = 1000.0;
 	num duplicatedLines = 0;
 	num biggestCloneLength = 0;
 	amountClones = 0;
-	for(list[loc] dupGroup <- duplications){
+	for(list[loc] dupGroup <- range(duplications)){
 		amountClones += size(dupGroup);
 		for(loc dup <- dupGroup){
 			int length = getDupLines(dup);
-			println("gevonden lengte: <length>");
 			duplicatedLines += length;
 			if(length > biggestCloneLength) biggestClone = dup;
 		}
@@ -32,7 +34,7 @@ public tuple[num, list[loc]] findVisualizationProbs(loc file){
 	list[loc] duplicatesInFile = [];
 	num duplicatedLinesInFile = 0;
 	amountClones = 0;
-	for(list[loc] dupGroup <- duplications){
+	for(list[loc] dupGroup <- range(duplications)){
 		amountClones += size(dupGroup);
 		for(loc dup <- dupGroup){
 			if(dup.path == file.path) {
@@ -57,6 +59,6 @@ public int getAmountCloneClasses() = size(duplications);
 public int getTotalAmountClones() = amountClones;
 public loc getBiggestClone() = biggestClone;
 public loc getExampleClone() {
-	list[loc] dupGroup = getOneFrom(duplications);
+	list[loc] dupGroup = getOneFrom(range(duplications));
 	return getOneFrom(dupGroup);
 }

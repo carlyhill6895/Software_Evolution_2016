@@ -2,10 +2,9 @@ module Report
 import IO;
 import DuplicationAnalyzer;
 
-public void generateReport(loc projectLocation){
+public void generateReport(loc projectLocation, map[int, list[loc]] duplications, map[loc, int] locPerFile){
 	loc reportFile = projectLocation + "report.txt";
-	set[list[loc]] duplications = {[|project://CaesarCipher/src/CaesarCipher.java|(640,14,<27,23>,<27,37>),|project://CaesarCipher/src/CaesarCipher.java|(600,15,<26,3>,<26,18>)]};
-	findReportProbs(duplications);
+	findReportProbs(duplications, locPerFile);
 	writeFile(reportFile, "Report\n\n");
 	appendToFile(reportFile, "Percentage of duplicated lines: <getPercentageTotalDuplication()>\n");
 	appendToFile(reportFile, "Amount of clone classes: <getAmountCloneClasses()>\n");
