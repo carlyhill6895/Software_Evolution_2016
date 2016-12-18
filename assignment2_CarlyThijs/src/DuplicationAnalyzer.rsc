@@ -8,9 +8,9 @@ private real percentageTotalDuplication = 0.0;
 private int amountClones = 0;
 private loc biggestClone;
 
-public void findReportProbs(set[list[loc]] allDuplications){
+public void findReportProbs(map[int, list[loc]] allDuplications){
 	duplications = allDuplications;
-	if(duplications == {}) throw "No duplications were found so no probs can be found...";
+	if(duplications == ()) throw "No duplications were found so no probs can be found...";
 	real totalLinesOfCode = 1000.0;
 	num duplicatedLines = 0;
 	num biggestCloneLength = 0;

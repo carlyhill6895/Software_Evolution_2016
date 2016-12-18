@@ -7,7 +7,7 @@ import IO;
 import String;
 import List;
 
-value example(loc project, int duplicationType){
+map[int, list[loc]] findDuplications(loc project, int duplicationType){
 	<LOC, LOCbyFile, ASTbyFile> = getDuplication(project, duplicationType);
 	map[int, list[loc]] acc = ();
 	for(i <- ASTbyFile)
@@ -19,6 +19,7 @@ tuple[int, map[loc, int], map[loc, Declaration]] getDuplication(loc projectLocat
 	M3 model = createM3FromEclipseProject(projectLocation);
 	<LOC, fileloc> = getLoc(model);
 	map[loc, Declaration] asts = getAsts(model, dupType);
+	iprintln(asts);
 	return <LOC, fileloc, asts>;
 }
 
