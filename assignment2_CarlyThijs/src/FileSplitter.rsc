@@ -57,15 +57,14 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 			hash += hash2; // TODO: ""
 		}
 		case \class(name, tree1, tree2, tree3): <hash, acc> = hashClass(name, tree1 + tree2, tree3, decl, acc);
-		case \class(tree):{
-			<hash, acc> = hashDecarationList(tree, acc);
-			hash += hashString("<i@typ>"); // TODO: ""
-		}
+		case \class(tree): <hash, acc> = hashDecarationList(tree, acc);
 		case \interface(name, tree1, tree2, tree3): <hash, acc> = hashClass(name, tree1 + tree2, tree3, decl, acc);
 		case \field(t, tree): <hash, acc> = hashVariable(t, tree, decl, acc);
 		case \initializer(s):{
 			<hash, acc> = getHashStatement(s, acc);
-			hash += "<decl@typ>"; //TODO: ""
+			try
+				hash += hashString("<decl@typ>"); //TODO: ""
+			catch: break;
 		}
 		case \method(ret, name, tree1, tree2):{
 			<hash, acc> = hashMethod(name, tree1, tree2, decl, acc);
@@ -88,16 +87,22 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 		}
 		case \annotationType(name, tree):{
 			<hash, acc> = hashDeclarationList(tree, acc);
-			hash += hashString(name + "<decl@typ>");
+			try
+				hash += hashString(name + "<decl@typ>");
+			catch: hash += hashString(name);
 		}
 		case \annotationTypeMember(t, name):{
 			<hash, acc> = getHashType(t, acc);
-			hash += hashString(name + "<decl@typ>"); // TODO
+			try
+				hash += hashString(name + "<decl@typ>");
+			catch: hash += hashString(name);
 		}
 		case \annotationTypeMember(t, name, expr):{
 			<hash, acc> = getHashExpression(expr, acc);
 			<hash2, acc> = getHashType(t, acc);
-			hash += hashString(name + "<decl@typ>") + hash2; // TODO
+			try
+				hash += hashString(name + "<decl@typ>") + hash2;
+			catch: hash += hashString(name) + hash2;
 		}
 		case \parameter(t, name, val):{
 			<hash, acc> = getHashType(t, acc);
@@ -105,7 +110,9 @@ tuple[int, map[int, list[loc]]] getHash(Declaration decl, map[int, list[loc]] ac
 		}
 		case \vararg(t, name):{
 			<hash, acc> = getHashType(t, acc);
-			hash += hashString(name + "<decl@typ>"); // TODO
+			try
+				hash += hashString(name + "<decl@typ>");
+			catch: hash += hashString(name);
 		}
 		//default: return <0, acc>;
 	}
@@ -162,7 +169,9 @@ tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list
 		}
 		case \methodCall(b, name, tree):{
 			<hash, acc> = hashMethodCall(b, name, tree, acc);
-			hash += hashString("<expr@typ>"); // TODO
+			try
+				hash += hashString("<expr@typ>"); // TODO
+			catch: break;
 		}
 		case \methodCall(b, expr1, name, tree):{
 			<hash, acc> = hashMethodCall(b, name, tree, acc);
@@ -193,7 +202,11 @@ tuple[int, map[int, list[loc]]] getHashExpression(Expression expr, map[int, list
 			hash += hashString(name);
 		}
 		case \_(name, expr1): <hash, acc> = hashExprStr(expr1, name, acc);
-		case \_(val): hash = hashString(val + "<expr@typ>");
+		case \_(val):{
+			try
+				hash = hashString(val + "<expr@typ>");
+			catch: hash = hashString(val);
+		}
 		//default: return <0, acc>;
 	}
 	list[loc] l;
