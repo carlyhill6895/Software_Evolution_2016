@@ -6,12 +6,20 @@ import lang::java::m3::AST;
 import IO;
 import String;
 import List;
+import Map;
 
 value example(loc project, int duplicationType){
 	<LOC, LOCbyFile, ASTbyFile> = getDuplication(project, duplicationType);
 	map[int, list[loc]] acc = ();
 	for(i <- ASTbyFile)
 		<_, acc> = getHash(ASTbyFile[i], acc);
+	for(i <- acc){
+		list[loc] l = dup(acc[i]);
+		if(size(l) > 1)
+			acc += (i:l);
+		else
+			acc = delete(acc, i);
+	}
 	return acc;
 }
 
