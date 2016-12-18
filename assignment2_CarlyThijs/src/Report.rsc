@@ -12,5 +12,4 @@ public void generateReport(loc projectLocation){
 	appendToFile(reportFile, "Total amount of clones: <getTotalAmountClones()>\n");
 	appendToFile(reportFile, "Biggest Clone: <readFile(getBiggestClone())>\n");
 	appendToFile(reportFile, "Example Clone: <readFile(getExampleClone())>\n");
-	
 }

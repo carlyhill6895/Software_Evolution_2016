@@ -446,6 +446,16 @@ tuple[int, map[int, list[loc]]] hashSubLists(list[tuple[int, loc]] l, map[int, l
 	return <hash, acc>;
 }
 
+int hash(str string){
+	int hash = 7;
+	int i = 0;
+	for(i < size(string)){
+		hash = hash * 31 + charAt(string, i);
+		i += 1;
+	}
+	return hash;
+}
+
 // Get the Source Lines of Code of a project.
 tuple[int, map[loc, int]] getLoc(M3 model){
 	int linesOfCode= 0;

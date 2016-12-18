@@ -16,7 +16,7 @@ public void main(){
 	println("biggest Clone: <getBiggestClone()>");
 	println("example Clone: <getExampleClone()>");
 	showProjectTree(|project://CaesarCipher|, |project://CaesarCipher/src|);
-	
+
 	generateReport(|project://CaesarCipher|);
 	
 }
